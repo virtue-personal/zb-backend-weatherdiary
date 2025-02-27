@@ -40,14 +40,12 @@ jobs:
           mkdir -p ~/.ssh
           echo "Adding host to known_hosts..."
           ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
-          cat ~/.ssh/known_hosts  # 디버깅을 위한 출력
 
       # 6. SSH 에이전트 시작 및 SSH 키 추가
       - name: Start SSH agent and add key
         run: |
           eval $(ssh-agent -s)
           echo "${{ secrets.AWS_SSH_KEY }}" | ssh-add - > /dev/null
-          ssh-add -l  # 디버깅을 위한 출력
 
       # 7. AWS 서버에 SSH 접속 및 Docker Compose로 배포
       - name: Deploy to AWS Docker Compose
@@ -79,6 +77,5 @@ jobs:
             # 5️⃣ Docker Compose로 컨테이너 실행
             echo "Starting Docker Compose..."
             cd ~/deploy
-            ls -l ~/deploy  # 디버깅을 위한 출력
             docker-compose up -d --build
           EOF
