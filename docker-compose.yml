@@ -1,6 +1,8 @@
+version: "3.8"
 services:
-  app:
+  zb-weather-diary:
     image: zb-weather-diary
+    container_name: zb-weather-diary-container
     build:
       context: .
       dockerfile: Dockerfile
