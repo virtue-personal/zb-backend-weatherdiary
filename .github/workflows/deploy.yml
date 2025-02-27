@@ -64,8 +64,8 @@ jobs:
             # 4️⃣ 최신 코드와 docker-compose.yml 파일을 EC2 서버로 전송
             rm -rf ~/deploy
             mkdir -p ~/deploy
-            scp -i ~/.ssh/id_rsa -r ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy
-            scp -i ~/.ssh/id_rsa -r docker-compose.yml ec2-user@${{ secrets.AWS_HOST }}:~/deploy
+            scp -i ~/.ssh/id_rsa ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
+            scp -i ~/.ssh/id_rsa ./docker-compose.yml ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
 
             # 5️⃣ Docker Compose로 컨테이너 실행
             cd ~/deploy
