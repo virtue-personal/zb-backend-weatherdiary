@@ -34,10 +34,10 @@ jobs:
           echo "${{ secrets.AWS_SSH_KEY }}" | tee ~/.ssh/id_rsa > /dev/null
           chmod 600 ~/.ssh/id_rsa
 
-      # 5. SSH 호스트 키 검증 비활성화
-      - name: Disable SSH host key checking
+      # 5. SSH 호스트 키 검증 비활성화 및 known_hosts 파일 업데이트
+      - name: Add host to known_hosts
         run: |
-          echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+          ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
       # 6. SSH 에이전트 시작 및 SSH 키 추가
       - name: Start SSH agent and add key
@@ -61,7 +61,7 @@ jobs:
             # 3️⃣ 최신 코드 전송 및 빌드된 JAR 파일 업로드
             rm -rf ~/deploy
             mkdir -p ~/deploy
-            scp -i ~/.ssh/id_rsa -r * ec2-user@${{ secrets.AWS_HOST }}:~/deploy
+            scp -i ~/.ssh/id_rsa -r ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy
 
             # 4️⃣ Docker Compose로 컨테이너 실행
             cd ~/deploy
