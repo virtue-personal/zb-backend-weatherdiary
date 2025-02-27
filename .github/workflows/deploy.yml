@@ -1,4 +1,4 @@
-name: Deploy to AWS Linux Docker
+name: Deploy to AWS Linux Docker with Docker Compose
 
 on:
   push:
@@ -45,32 +45,25 @@ jobs:
           eval $(ssh-agent -s)
           echo "${{ secrets.AWS_SSH_KEY }}" | ssh-add - > /dev/null
 
-      # 7. AWS 서버에 SSH 접속 및 Docker 컨테이너 배포
-      - name: Deploy to AWS Docker
+      # 7. AWS 서버에 SSH 접속 및 Docker Compose로 배포
+      - name: Deploy to AWS Docker Compose
         run: |
           ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_HOST }} << 'EOF'
-            # 1️⃣ Docker 환경 변수 설정
+            # 1️⃣ Docker Compose 환경 변수 설정
             export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
             export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
             export DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
 
             # 2️⃣ 기존 컨테이너 중지 및 삭제
-            docker stop zb-weather-diary-container || true
-            docker rm zb-weather-diary-container || true
+            docker-compose -f ~/deploy/docker-compose.yml down || true
 
             # 3️⃣ 최신 코드 전송 및 빌드된 JAR 파일 업로드
             rm -rf ~/deploy
             mkdir -p ~/deploy
             scp -i ~/.ssh/id_rsa -r * ec2-user@${{ secrets.AWS_HOST }}:~/deploy
 
-            # 4️⃣ Docker 컨테이너 실행
-            docker build -t zb-weather-diary ~/deploy
-            docker run -d --name zb-weather-diary-container \
-              -e JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }} \
-              -e DATABASE_HOST=${{ secrets.DATABASE_HOST }} \
-              -e DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }} \
-              -e DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }} \
-              -p 8081:8081 \
-              zb-weather-diary
+            # 4️⃣ Docker Compose로 컨테이너 실행
+            cd ~/deploy
+            docker-compose up -d --build
           EOF
