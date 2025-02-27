@@ -24,7 +24,3 @@ logging:
 
 openweathermap:
   key: ENC(jBdVosbeOteUGOYStf6IVmulQvNc7RF5ZItkCQWkZWNymscNbarTQEbf/r64Ejvy7enyRTmrDHrtbycRIyheYlcFqZn13oy8AlsyT1s1Yso=)
-
-jasypt:
-  encryptor:
-    password: { JASYPT_ENCRYPTOR_PASSWORD }
