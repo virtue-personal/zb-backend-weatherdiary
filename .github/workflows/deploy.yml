@@ -37,6 +37,7 @@ jobs:
       # 5. SSH 호스트 키 검증 비활성화 및 known_hosts 파일 업데이트
       - name: Add host to known_hosts
         run: |
+          mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
       # 6. SSH 에이전트 시작 및 SSH 키 추가
