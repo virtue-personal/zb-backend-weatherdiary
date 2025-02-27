@@ -49,6 +49,11 @@ jobs:
       # 7. AWS 서버에 SSH 접속 및 Docker Compose로 배포
       - name: Deploy to AWS Docker Compose
         run: |
+          # 1. EC2 서버로 빌드된 파일을 전송
+          scp -i ~/.ssh/id_rsa ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
+          scp -i ~/.ssh/id_rsa ./docker-compose.yml ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
+
+          # 2. EC2 인스턴스에 접속하여 Docker Compose 실행
           ssh -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_HOST }} << 'EOF'
             # 1️⃣ Docker Compose 환경 변수 설정
             export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
@@ -62,11 +67,11 @@ jobs:
             # 3️⃣ 기존 docker-compose.yml 파일 삭제
             rm -f ~/deploy/docker-compose.yml
 
-            # 4️⃣ 최신 코드와 docker-compose.yml 파일을 EC2 서버로 전송
+            # 4️⃣ 최신 docker-compose.yml 파일과 JAR 파일을 EC2 서버로 전송
             rm -rf ~/deploy
             mkdir -p ~/deploy
-            scp -i ~/.ssh/id_rsa ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
-            scp -i ~/.ssh/id_rsa ./docker-compose.yml ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
+            mv ~/deploy/zb-weather-diary.jar ~/deploy/
+            mv ~/deploy/docker-compose.yml ~/deploy/
 
             # 5️⃣ Docker Compose로 컨테이너 실행
             cd ~/deploy
