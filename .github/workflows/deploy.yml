@@ -35,7 +35,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SSH_KEY }}
           port: 22
-          source: "/build/libs/zb-weather-diary.jar,/docker-compose.yml,/Dockerfile"
+          source: "./docker-compose.yml,./build/libs/zb-weather-diary.jar"  # 경로 수정
           target: "/home/ec2-user/deploy"
 
       # 5. AWS 서버에 SSH 접속 및 Docker Compose로 배포
