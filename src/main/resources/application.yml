@@ -1,12 +1,18 @@
+server:
+  port: 8081
+
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/project?serverTimezone=UTC&characterEnding=UTF-8
-    username: root
-    password: root
+    url: ENC(oQKZTiqWrpM21dS8zmSlax4siwTsKccTRcE2WceQtot1/wMAC2RvoACEbtAa+nhX6Bc72nbQhfcguC6QUybAhkTjcHrD8B978uUQOaUIHrnn8gxNxSt5pFrZBuGoHKOqMaYnBhN4gG0BzklqT5CCOSi2KrLTgQIh/MRsmUIsCM4=)
+    username: ENC(SfkSqI/Hg7wNnSDR6qsBDLzRn5mY4rtw40D9mhFz9x66mbFfM2cg5vOI4sGFzlPi)
+    password: ENC(zBbUwZGrh0DwieNKsxHQEe35Dzgm+FbnrP5zLe0E33IED0LGXMVAQscrN4eQXGF0)
+
   jpa:
     show-sql: true
     database: mysql
+    hibernate:
+      ddl-auto: update
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -15,3 +21,10 @@ spring:
 
 logging:
   config: classpath:logback-spring.xml
+
+openweathermap:
+  key: ENC(jBdVosbeOteUGOYStf6IVmulQvNc7RF5ZItkCQWkZWNymscNbarTQEbf/r64Ejvy7enyRTmrDHrtbycRIyheYlcFqZn13oy8AlsyT1s1Yso=)
+
+jasypt:
+  encryptor:
+    password: { JASYPT_ENCRYPTOR_PASSWORD }
