@@ -35,7 +35,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SSH_KEY }}
           port: 22
-          source: "/build/libs/zb-weather-diary.jar,/docker-compose.yml"
+          source: "./build/libs/zb-weather-diary.jar,./docker-compose.yml,./Dockerfile"
           target: "/home/ec2-user/deploy"
 
       # 5. AWS 서버에 SSH 접속 및 Docker Compose로 배포
@@ -47,7 +47,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
 
-          # SSH 접속 시 호스트 키 검증 비활성화
+          # SSH 접속 시 호스트 키 검증 비활성화 및 배포 실행
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_HOST }} << 'EOF'
             # 1️⃣ Docker Compose 환경 변수 설정
             echo "Setting environment variables..."
@@ -64,14 +64,7 @@ jobs:
             echo "Removing old docker-compose.yml..."
             rm -f ~/deploy/docker-compose.yml
 
-            # 4️⃣ 최신 코드와 docker-compose.yml 파일을 EC2 서버로 전송
-            echo "Transferring new files..."
-            rm -rf ~/deploy
-            mkdir -p ~/deploy
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./build/libs/zb-weather-diary.jar ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
-            scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ./docker-compose.yml ec2-user@${{ secrets.AWS_HOST }}:~/deploy/
-
-            # 5️⃣ Docker Compose로 컨테이너 실행
+            # 4️⃣ Docker Compose로 컨테이너 실행
             echo "Starting Docker Compose..."
             cd ~/deploy
             docker-compose up -d --build
