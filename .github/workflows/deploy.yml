@@ -16,7 +16,7 @@ jobs:
 
       # ✅ 2. JDK 17 설정 (AWS 공식 GitHub Actions 사용)
       - name: Set up JDK 17
-        uses: aws-actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
