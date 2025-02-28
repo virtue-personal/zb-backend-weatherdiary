@@ -1,22 +1,23 @@
 package diary.weather.service;
 
+import diary.weather.WeatherApplication;
+import diary.weather.domain.dto.DiaryDTO;
+import diary.weather.domain.entity.DateWeatherEntity;
+import diary.weather.domain.entity.DiaryEntity;
+import diary.weather.repository.DateWeatherRepository;
+import diary.weather.repository.DiaryRepository;
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import diary.weather.WeatherApplication;
-import diary.weather.domain.DateWeather;
-import diary.weather.domain.Diary;
-import diary.weather.repository.DateWeatherRepository;
-import diary.weather.repository.DiaryRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,17 +30,12 @@ import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final DateWeatherRepository dateWeatherRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherApplication.class);
-
-    @Autowired
-    public DiaryService(DiaryRepository diaryRepository, DateWeatherRepository dateWeatherRepository) {
-        this.diaryRepository = diaryRepository;
-        this.dateWeatherRepository = dateWeatherRepository;
-    }
 
 
     @Value("${openweathermap.key}")
@@ -60,14 +56,14 @@ public class DiaryService {
 
 //        System.out.println(getWeatherString());
         // Api -> DB에 저장된 데이터 가져오기
-        DateWeather dateWeather = getDateWeather(date);
+        DateWeatherEntity dateWeatherEntity = getDateWeather(date);
 
         /* 설명: 파싱된 데이터 + 일기 값 DB에 저장 */
-        Diary nowDiary = new Diary();
-        nowDiary.setDateWeather(dateWeather);
-        nowDiary.setText(text);
+        DiaryEntity nowDiaryEntity = new DiaryEntity();
+        nowDiaryEntity.setDateWeather(dateWeatherEntity);
+        nowDiaryEntity.setText(text);
 
-        diaryRepository.save(nowDiary);
+        diaryRepository.save(nowDiaryEntity);
 
         logger.info("end to create diary");
 //        logger.error();
@@ -76,53 +72,64 @@ public class DiaryService {
 
 
     // 시간마다 날씨 정보 가져오기
-    private DateWeather getWeatherFromApi() {
+    private DateWeatherEntity getWeatherFromApi() {
         // open weather map에서 날씨 데이터 가져오기
         String weatherDate = getWeatherString();
         // 날씨 json 파싱
         Map<String, Object> parsedWeather = parseWeather(weatherDate);
-        DateWeather dateWeather = new DateWeather();
-        dateWeather.setDate(LocalDate.now());
-        dateWeather.setWeather(parsedWeather.get("main").toString());
-        dateWeather.setIcon(parsedWeather.get("icon").toString());
-        dateWeather.setTemperature((Double) parsedWeather.get("temp"));
-        return dateWeather;
+        DateWeatherEntity dateWeatherEntity = new DateWeatherEntity();
+        dateWeatherEntity.setDate(LocalDate.now());
+        dateWeatherEntity.setWeather(parsedWeather.get("main").toString());
+        dateWeatherEntity.setIcon(parsedWeather.get("icon").toString());
+
+        // temp를 섭씨로 변환
+        double kelvinTemp = (Double) parsedWeather.get("temp");
+        double celsiusTemp = kelvinTemp - 273.15;
+        dateWeatherEntity.setTemperature(celsiusTemp);
+        return dateWeatherEntity;
     }
 
 
-    private DateWeather getDateWeather(LocalDate date) {
-        List<DateWeather> dateWeatherListFromDB = dateWeatherRepository.findAllByDate(date);
-        if (dateWeatherListFromDB.size() == 0) {
+    private DateWeatherEntity getDateWeather(LocalDate date) {
+        List<DateWeatherEntity> dateWeatherEntityListFromDB = dateWeatherRepository.findAllByDate(date);
+        if (dateWeatherEntityListFromDB.size() == 0) {
             // 새로 api에서 날씨 정보를 가져와야함
             return getWeatherFromApi();
         } else {
-            return dateWeatherListFromDB.get(0);
+            return dateWeatherEntityListFromDB.get(0);
         }
     }
 
 
-    // 단일 날짜 조회
+    /**
+     * 특정 날짜의 일기 조회
+     */
     @Transactional(readOnly = true)
-    public List<Diary> readDiary(LocalDate date) {
+    public List<DiaryDTO> readDiary(LocalDate date) {
         logger.debug("read diary");
-//        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
-//            throw new InvalidDate();
-//        }
-        return diaryRepository.findAllByDate(date);
+        return diaryRepository.findAllByDate(date)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
 
-    // 범위 날짜 조회
-    @Transactional(readOnly = true)
-    public List<Diary> readDiaries(LocalDate startDate, LocalDate endDate) {
-        return diaryRepository.findAllByDateBetween(startDate, endDate);
+    /**
+     * 특정 기간의 일기 조회
+     */
+    public List<DiaryDTO> readDiaries(LocalDate startDate, LocalDate endDate) {
+        logger.debug("Fetching diary entries between {} and {}", startDate, endDate);
+        return diaryRepository.findAllByDateBetween(startDate, endDate)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
     }
 
     // 일기 수정
     public void updateDiary(LocalDate date, String text) {
-        Diary nowDiary = diaryRepository.getFirstByDate(date);
-        nowDiary.setText(text);
-        diaryRepository.save(nowDiary);
+        DiaryEntity nowDiaryEntity = diaryRepository.getFirstByDate(date);
+        nowDiaryEntity.setText(text);
+        diaryRepository.save(nowDiaryEntity);
     }
 
     // 일기 삭제
@@ -179,7 +186,24 @@ public class DiaryService {
         resultMap.put("main", weatherData.get("main"));
         resultMap.put("icon", weatherData.get("icon"));
 
+
+
         return resultMap;
     }
 
+    /**
+     * DiaryEntity -> DiaryDTO 변환
+     */
+    private DiaryDTO convertToDTO(DiaryEntity diary) {
+        return new DiaryDTO(
+                diary.getId(),
+                diary.getWeather(),
+                diary.getIcon(),
+                diary.getTemperature(),
+                diary.getText(),
+                diary.getDate()
+        );
+
+
+    }
 }
