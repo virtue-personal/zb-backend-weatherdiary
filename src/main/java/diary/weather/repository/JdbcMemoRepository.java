@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import diary.weather.domain.Memo;
+import diary.weather.domain.entity.Memo;
 
 import javax.sql.DataSource;
 import java.util.List;

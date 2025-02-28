@@ -3,18 +3,18 @@ package diary.weather.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import diary.weather.domain.Diary;
+import diary.weather.domain.entity.DiaryEntity;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface DiaryRepository extends JpaRepository<Diary, Integer> {
-    List<Diary> findAllByDate(LocalDate date);
+public interface DiaryRepository extends JpaRepository<DiaryEntity, Integer> {
+    List<DiaryEntity> findAllByDate(LocalDate date);
 
-    List<Diary> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
+    List<DiaryEntity> findAllByDateBetween(LocalDate startDate, LocalDate endDate);
 
-    Diary getFirstByDate(LocalDate date);
+    DiaryEntity getFirstByDate(LocalDate date);
 
     @Transactional
     void deleteAllByDate(LocalDate date);
