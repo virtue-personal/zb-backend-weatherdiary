@@ -1,6 +1,6 @@
 package diary.weather.controller;
 
-import diary.weather.domain.dto.DiaryDTO;
+import diary.weather.domain.entity.DiaryEntity;
 import diary.weather.service.DiaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,7 +51,7 @@ public class DiaryController {
      */
     @Operation(summary = "단일 날짜 조회", description = "선택한 날짜의 모든 일기 데이터를 가져옵니다.")
     @GetMapping("/read/diary")
-    public ResponseEntity<List<DiaryDTO>> readDiary(
+    public ResponseEntity<List<DiaryEntity>> readDiary(
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             @Parameter(name = "date", description = "조회할 날짜", example = "2025-02-26") LocalDate date) {
@@ -67,14 +67,14 @@ public class DiaryController {
      */
     @Operation(summary = "범위 날짜 조회", description = "선택한 기간 내에 작성된 모든 일기 데이터를 반환합니다.")
     @GetMapping("/read/diaries")
-    public ResponseEntity<List<DiaryDTO>> readDiaries(
+    public ResponseEntity<List<DiaryEntity>> readDiaries(
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            @Parameter(name = "startDate", description = "조회할 기간의 시작 날짜", example = "2025-02-20") LocalDate startDate,
+            @Parameter(name = "startDate", description = "조회할 기간의 시작 날짜", example = "2024-12-31") LocalDate startDate,
 
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            @Parameter(name = "endDate", description = "조회할 기간의 종료 날짜", example = "2025-02-26") LocalDate endDate) {
+            @Parameter(name = "endDate", description = "조회할 기간의 종료 날짜", example = "2025-12-31") LocalDate endDate) {
         return ResponseEntity.ok(diaryService.readDiaries(startDate, endDate));
     }
 

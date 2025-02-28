@@ -1,10 +1,10 @@
 package diary.weather.repository;
 
+import diary.weather.domain.entity.MemoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import diary.weather.domain.entity.Memo;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -19,24 +19,24 @@ public class JdbcMemoRepository {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public Memo save(Memo memo) {
+    public MemoEntity save(MemoEntity memoEntity) {
         String sql = "insert into memo values(?,?)";
-        jdbcTemplate.update(sql, memo.getId(), memo.getText());
-        return memo;
+        jdbcTemplate.update(sql, memoEntity.getId(), memoEntity.getText());
+        return memoEntity;
     }
 
-    public List<Memo> findAll() {
+    public List<MemoEntity> findAll() {
         String sql = "select * from memo";
         return jdbcTemplate.query(sql, memoRowMapper());
     }
 
-    public Optional<Memo> findById(int id) {
+    public Optional<MemoEntity> findById(int id) {
         String sql = "select * from memo where id = ?";
         return jdbcTemplate.query(sql, memoRowMapper(), id).stream().findFirst();
     }
 
-    private RowMapper<Memo> memoRowMapper() {
-        return (rs, rowNum) -> new Memo(
+    private RowMapper<MemoEntity> memoRowMapper() {
+        return (rs, rowNum) -> new MemoEntity(
                 rs.getInt("id"),
                 rs.getString("text")
         );

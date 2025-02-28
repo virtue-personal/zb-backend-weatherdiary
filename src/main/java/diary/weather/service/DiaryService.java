@@ -1,11 +1,5 @@
 package diary.weather.service;
 
-import diary.weather.WeatherApplication;
-import diary.weather.domain.dto.DiaryDTO;
-import diary.weather.domain.entity.DateWeatherEntity;
-import diary.weather.domain.entity.DiaryEntity;
-import diary.weather.repository.DateWeatherRepository;
-import diary.weather.repository.DiaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,11 +7,17 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import diary.weather.WeatherApplication;
+import diary.weather.domain.entity.DateWeatherEntity;
+import diary.weather.domain.entity.DiaryEntity;
+import diary.weather.repository.DateWeatherRepository;
+import diary.weather.repository.DiaryRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -42,7 +42,7 @@ public class DiaryService {
     private String apikey;
 
     @Transactional
-    @Scheduled(cron = "0 0 1 * * *")    // 매일 새벽 1시에 동작
+    @Scheduled(cron = "0 0 * * * *") // 매시간 정각마다 실행
     public void saveWeatherDate() {
         logger.info("날씨 데이터 잘 가져왔는지...");
         dateWeatherRepository.save(getWeatherFromApi());
@@ -81,11 +81,11 @@ public class DiaryService {
         dateWeatherEntity.setDate(LocalDate.now());
         dateWeatherEntity.setWeather(parsedWeather.get("main").toString());
         dateWeatherEntity.setIcon(parsedWeather.get("icon").toString());
-
         // temp를 섭씨로 변환
         double kelvinTemp = (Double) parsedWeather.get("temp");
         double celsiusTemp = kelvinTemp - 273.15;
-        dateWeatherEntity.setTemperature(celsiusTemp);
+        double roundedTemp = Math.round(celsiusTemp * 10.0) / 10.0;
+        dateWeatherEntity.setTemperature(roundedTemp);
         return dateWeatherEntity;
     }
 
@@ -101,28 +101,21 @@ public class DiaryService {
     }
 
 
-    /**
-     * 특정 날짜의 일기 조회
-     */
+    // 단일 날짜 조회
     @Transactional(readOnly = true)
-    public List<DiaryDTO> readDiary(LocalDate date) {
+    public List<DiaryEntity> readDiary(LocalDate date) {
         logger.debug("read diary");
-        return diaryRepository.findAllByDate(date)
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
+//        if (date.isAfter(LocalDate.ofYearDay(3050, 1))) {
+//            throw new InvalidDate();
+//        }
+        return diaryRepository.findAllByDate(date);
     }
 
 
-    /**
-     * 특정 기간의 일기 조회
-     */
-    public List<DiaryDTO> readDiaries(LocalDate startDate, LocalDate endDate) {
-        logger.debug("Fetching diary entries between {} and {}", startDate, endDate);
-        return diaryRepository.findAllByDateBetween(startDate, endDate)
-                .stream()
-                .map(this::convertToDTO)
-                .toList();
+    // 범위 날짜 조회
+    @Transactional(readOnly = true)
+    public List<DiaryEntity> readDiaries(LocalDate startDate, LocalDate endDate) {
+        return diaryRepository.findAllByDateBetween(startDate, endDate);
     }
 
     // 일기 수정
@@ -186,24 +179,7 @@ public class DiaryService {
         resultMap.put("main", weatherData.get("main"));
         resultMap.put("icon", weatherData.get("icon"));
 
-
-
         return resultMap;
     }
 
-    /**
-     * DiaryEntity -> DiaryDTO 변환
-     */
-    private DiaryDTO convertToDTO(DiaryEntity diary) {
-        return new DiaryDTO(
-                diary.getId(),
-                diary.getWeather(),
-                diary.getIcon(),
-                diary.getTemperature(),
-                diary.getText(),
-                diary.getDate()
-        );
-
-
-    }
 }
