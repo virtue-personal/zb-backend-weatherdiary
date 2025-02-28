@@ -1,4 +1,4 @@
-package diary.weather.domain;
+package diary.weather.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-public class Diary {
+public class DiaryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -31,11 +31,11 @@ public class Diary {
 
     private LocalDate date;
 
-    public void setDateWeather(DateWeather dateWeather) {
-        this.date = dateWeather.getDate();
-        this.weather = dateWeather.getWeather();
-        this.icon = dateWeather.getIcon();
-        this.temperature = dateWeather.getTemperature();
+    public void setDateWeather(DateWeatherEntity dateWeatherEntity) {
+        this.date = dateWeatherEntity.getDate();
+        this.weather = dateWeatherEntity.getWeather();
+        this.icon = dateWeatherEntity.getIcon();
+        this.temperature = dateWeatherEntity.getTemperature();
 
     }
 }

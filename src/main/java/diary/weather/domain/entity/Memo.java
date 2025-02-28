@@ -1,4 +1,4 @@
-package diary.weather.domain;
+package diary.weather.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

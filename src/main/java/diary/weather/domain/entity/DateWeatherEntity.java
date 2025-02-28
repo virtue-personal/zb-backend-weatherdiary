@@ -1,4 +1,4 @@
-package diary.weather.domain;
+package diary.weather.domain.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity(name = "date_weather")
-public class DateWeather {
+public class DateWeatherEntity {
     @Id
     private LocalDate date;
     private String weather;
