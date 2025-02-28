@@ -35,7 +35,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_SSH_KEY }}
           port: 22
-          source: "./Dockerfile,./docker-compose.yml,./build/libs/zb-weather-diary.jar"  # 경로 수정
+          source: "./Dockerfile,./docker-compose.yml,./build/libs/zb-weather-diary.jar"
           target: "/home/ec2-user/deploy/zb-weather-diary"
 
       # 5. AWS 서버에 SSH 접속 및 Docker Compose로 배포
@@ -49,16 +49,22 @@ jobs:
 
           # SSH 접속 시 호스트 키 검증 비활성화 및 배포 실행
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.AWS_HOST }} << 'EOF'
-            # Docker Compose 환경 변수 설정
             echo "Setting environment variables..."
             export JASYPT_ENCRYPTOR_PASSWORD=${{ secrets.JASYPT_ENCRYPTOR_PASSWORD }}
             export DATABASE_HOST=${{ secrets.DATABASE_HOST }}
             export DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
 
-            # 기존 컨테이너 중지 및 삭제
+            # 기존 컨테이너 중지 및 삭제 (이름 충돌 방지)
             echo "Stopping existing containers..."
             docker-compose -f ~/deploy/zb-weather-diary/docker-compose.yml down || true
+
+            # 기존 컨테이너가 남아 있는 경우 강제 삭제
+            echo "Removing old containers if exist..."
+            docker ps -aq --filter name=zb-weather-diary-container | xargs -r docker rm -f
+
+            # 기존 네트워크 삭제 (필요 시)
+            docker network prune -f
 
             # Docker Compose로 컨테이너 실행
             echo "Starting Docker Compose..."
