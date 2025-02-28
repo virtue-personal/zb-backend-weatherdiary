@@ -5,7 +5,7 @@ import diary.weather.repository.JdbcMemoRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import diary.weather.domain.Memo;
+import diary.weather.domain.entity.Memo;
 
 import java.util.List;
 import java.util.Optional;
