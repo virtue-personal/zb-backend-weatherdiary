@@ -36,7 +36,7 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           port: 22
           source: "./docker-compose.yml,./build/libs/zb-weather-diary.jar"  # 경로 수정
-          target: "/home/ec2-user/deploy"
+          target: "/home/ec2-user/deploy/zb-weather-diary"
 
       # 5. AWS 서버에 SSH 접속 및 Docker Compose로 배포
       - name: Deploy to AWS Docker Compose
@@ -58,10 +58,10 @@ jobs:
 
             # 2️⃣ 기존 컨테이너 중지 및 삭제
             echo "Stopping existing containers..."
-            docker-compose -f ~/deploy/docker-compose.yml down || true
+            docker-compose -f ~/deploy/zb-weather-diary/docker-compose.yml down || true
 
             # 4️⃣ Docker Compose로 컨테이너 실행
             echo "Starting Docker Compose..."
-            cd ~/deploy
+            cd ~/deploy/zb-weather-diary
             docker-compose up -d --build
           EOF
