@@ -2,9 +2,13 @@ package diary.weather.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
 @OpenAPIDefinition(
+        servers = {
+                @Server(url = "https://virtue-project.info")
+        },
         info = @Info(
                 title = "WeatherDiary Project",
                 description = "날씨 일기를 CRUD 할 수 있는 백엔드 API 입니다.",
