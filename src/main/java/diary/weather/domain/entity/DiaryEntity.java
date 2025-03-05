@@ -1,5 +1,6 @@
 package diary.weather.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,13 +12,14 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table
+@Table(name = "diary")
 @Schema(description = "일기 엔티티")
 public class DiaryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(description = "일기 ID", example = "1")
+    @JsonIgnore
     private int id;
 
     @Schema(description = "날씨 상태", example = "Clear")

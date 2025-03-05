@@ -40,7 +40,7 @@ public class DiaryController {
             @RequestBody
             @Parameter(name = "text", description = "저장할 일기의 내용", example = "오늘은 날씨가 맑고 기분이 좋았다.") String text) {
         diaryService.createDiary(date, text);
-        return ResponseEntity.ok("일기가 성공적으로 저장되었습니다.");
+        return ResponseEntity.status(201).body("일기가 성공적으로 저장되었습니다.");
     }
 
     /**

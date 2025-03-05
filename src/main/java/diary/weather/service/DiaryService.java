@@ -6,6 +6,7 @@ import diary.weather.domain.entity.DiaryEntity;
 import diary.weather.repository.DateWeatherRepository;
 import diary.weather.repository.DiaryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -42,31 +43,27 @@ public class DiaryService {
     @Transactional
     @Scheduled(cron = "0 0 * * * *") // 매시간 정각마다 실행
     public void saveWeatherDate() {
-        logger.info("날씨 데이터 잘 가져왔는지...");
+        logger.info("***** 날씨 데이터 CRON 실행 *****");
         dateWeatherRepository.save(getWeatherFromApi());
+        logger.info("***** 날씨 데이터 CRON 종료 *****");
     }
 
 
     // 일기 쓰기
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void createDiary(LocalDate date, String text) {
-        logger.info("started to create diary");
 
-//        System.out.println(getWeatherString());
+
         // Api -> DB에 저장된 데이터 가져오기
         DateWeatherEntity dateWeatherEntity = getDateWeather(date);
 
         /* 설명: 파싱된 데이터 + 일기 값 DB에 저장 */
         DiaryEntity nowDiaryEntity = new DiaryEntity();
-        nowDiaryEntity.setDate(date);
         nowDiaryEntity.setDateWeather(dateWeatherEntity);
+        nowDiaryEntity.setDate(date);
         nowDiaryEntity.setText(text);
 
         diaryRepository.save(nowDiaryEntity);
-
-        logger.info("end to create diary");
-//        logger.error();
-//        logger.warn();
     }
 
 
@@ -114,7 +111,7 @@ public class DiaryService {
     // 범위 날짜 조회
     @Transactional(readOnly = true)
     public List<DiaryEntity> readDiaries(LocalDate startDate, LocalDate endDate) {
-        return diaryRepository.findAllByDateBetween(startDate, endDate);
+        return diaryRepository.findAllByDateBetweenOrderByDateAsc(startDate, endDate);
     }
 
     // 일기 수정
@@ -125,7 +122,10 @@ public class DiaryService {
         diaryRepository.save(nowDiaryEntity);
     }
 
-    // 일기 삭제
+    /**
+     * 일기 삭제
+     * @param date 삭제할 일기의 날짜
+     */
     public void deleteDiary(LocalDate date) {
         diaryRepository.deleteAllByDate(date);
     }
