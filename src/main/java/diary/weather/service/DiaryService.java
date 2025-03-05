@@ -1,5 +1,10 @@
 package diary.weather.service;
 
+import diary.weather.WeatherApplication;
+import diary.weather.domain.entity.DateWeatherEntity;
+import diary.weather.domain.entity.DiaryEntity;
+import diary.weather.repository.DateWeatherRepository;
+import diary.weather.repository.DiaryRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -7,17 +12,11 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import diary.weather.WeatherApplication;
-import diary.weather.domain.entity.DateWeatherEntity;
-import diary.weather.domain.entity.DiaryEntity;
-import diary.weather.repository.DateWeatherRepository;
-import diary.weather.repository.DiaryRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DiaryService {
     private final DiaryRepository diaryRepository;
@@ -60,6 +58,7 @@ public class DiaryService {
 
         /* 설명: 파싱된 데이터 + 일기 값 DB에 저장 */
         DiaryEntity nowDiaryEntity = new DiaryEntity();
+        nowDiaryEntity.setDate(date);
         nowDiaryEntity.setDateWeather(dateWeatherEntity);
         nowDiaryEntity.setText(text);
 
@@ -121,6 +120,7 @@ public class DiaryService {
     // 일기 수정
     public void updateDiary(LocalDate date, String text) {
         DiaryEntity nowDiaryEntity = diaryRepository.getFirstByDate(date);
+        nowDiaryEntity.setDate(date);
         nowDiaryEntity.setText(text);
         diaryRepository.save(nowDiaryEntity);
     }

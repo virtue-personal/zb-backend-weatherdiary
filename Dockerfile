@@ -1,12 +1,11 @@
-# 1단계: 애플리케이션 빌드 (Gradle 사용)
-FROM gradle:8.7-jdk17 AS build
-WORKDIR /home/gradle/project
-COPY . .
-RUN gradle clean bootJar --no-daemon
-
-# 2단계: 실행 이미지 생성 (OpenJDK 기반)
+# OpenJDK 17 이미지를 기반으로 합니다.
 FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=build /home/gradle/project/build/libs/zb-weather-diary.jar ./zb-weather-diary.jar
+
+# JAR 파일을 /app 디렉토리에 복사합니다.
+COPY build/libs/zb-weather-diary.jar /app/zb-weather-diary.jar
+
+# 컨테이너가 실행될 때 애플리케이션을 실행합니다.
+CMD ["java", "-jar", "/app/zb-weather-diary.jar"]
+
+# 애플리케이션이 사용하는 포트를 열어줍니다.
 EXPOSE 8081
-CMD ["java", "-jar", "zb-weather-diary.jar"]

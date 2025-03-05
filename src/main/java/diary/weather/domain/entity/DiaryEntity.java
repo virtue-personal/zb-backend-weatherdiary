@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name = "diary")
+@Table
 @Schema(description = "일기 엔티티")
 public class DiaryEntity {
 

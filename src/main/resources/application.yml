@@ -1,32 +1,25 @@
 server:
   port: 8081
 
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: ENC(oQKZTiqWrpM21dS8zmSlax4siwTsKccTRcE2WceQtot1/wMAC2RvoACEbtAa+nhX6Bc72nbQhfcguC6QUybAhkTjcHrD8B978uUQOaUIHrnn8gxNxSt5pFrZBuGoHKOqMaYnBhN4gG0BzklqT5CCOSi2KrLTgQIh/MRsmUIsCM4=)
-#    username: ENC(SfkSqI/Hg7wNnSDR6qsBDLzRn5mY4rtw40D9mhFz9x66mbFfM2cg5vOI4sGFzlPi)
-#    password: ENC(zBbUwZGrh0DwieNKsxHQEe35Dzgm+FbnrP5zLe0E33IED0LGXMVAQscrN4eQXGF0)
-
 spring:
+  profiles:
+    active: private
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${URL}
-    username: ${username}
-    password: ${PASSWORD}
-
-
+    url: ENC(oQKZTiqWrpM21dS8zmSlax4siwTsKccTRcE2WceQtot1/wMAC2RvoACEbtAa+nhX6Bc72nbQhfcguC6QUybAhkTjcHrD8B978uUQOaUIHrnn8gxNxSt5pFrZBuGoHKOqMaYnBhN4gG0BzklqT5CCOSi2KrLTgQIh/MRsmUIsCM4=)
+    username: ENC(SfkSqI/Hg7wNnSDR6qsBDLzRn5mY4rtw40D9mhFz9x66mbFfM2cg5vOI4sGFzlPi)
+    password: ENC(zBbUwZGrh0DwieNKsxHQEe35Dzgm+FbnrP5zLe0E33IED0LGXMVAQscrN4eQXGF0)
 
   jpa:
     show-sql: true
     database: mysql
     hibernate:
       ddl-auto: update
+
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-  profiles:
-    active: private
 
 logging:
   config: classpath:logback-spring.xml
