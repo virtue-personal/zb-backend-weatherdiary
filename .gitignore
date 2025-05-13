@@ -1,4 +1,5 @@
 ### ADD SETTING ###
+.env
 logs
 application-private.yml
 
