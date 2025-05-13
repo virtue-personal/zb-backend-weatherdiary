@@ -1,12 +1,11 @@
 package diary.weather.service;
 
-import diary.weather.WeatherApplication;
+import diary.weather.Application;
 import diary.weather.domain.entity.DateWeatherEntity;
 import diary.weather.domain.entity.DiaryEntity;
 import diary.weather.repository.DateWeatherRepository;
 import diary.weather.repository.DiaryRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,7 +33,7 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final DateWeatherRepository dateWeatherRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(WeatherApplication.class);
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
 
     @Value("${openweathermap.key}")

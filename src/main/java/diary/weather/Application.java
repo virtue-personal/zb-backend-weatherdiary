@@ -10,10 +10,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableEncryptableProperties
-public class WeatherApplication {
+public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(WeatherApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }
