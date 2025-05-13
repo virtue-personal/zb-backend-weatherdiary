@@ -1,21 +1,24 @@
 server:
-  port: 8081
+  port: 10001
 
 spring:
-  profiles:
-    active: private
+  config:
+    import: optional:file:.env[.properties]
 
   datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(q8wcaBCxyg5BoclktrV2TcyyRu8I0stGX5dsBCvpIfBCkcUAotO1jjInCpSjcbUKxLweGJRksCgZTF5AzpQp+0CRktO2l1OcmPV4d/40dUC4lz1CbF0xLex16d02xzXY0Xgop/bTjuy5XWUVPI1SGxFdUOJfbK2e6jUt2Z40mcQvosPl+DdGMWVRdQSkRwTQbNFTwVbyQ3Z/S1w4uQ34t/PNoH73Lfc8PNRHCC3sEdw=)
-    username: ENC(DN8exeZAtIzBxyR9YCo1yEUdc/njNR58I9eIQbmJznXWnTn8fKMZjuJqYhM9yo4s)
-    password: ENC(i3owVK7bP8I+YFv+9BkbC/Eqc3YiP3oGGlA0A8f9/Ypdp8Tu8xrtX+TN6GKDRwzp)
 
   jpa:
     show-sql: true
     database: mysql
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
 
   mvc:
     pathmatch:
@@ -26,3 +29,17 @@ logging:
 
 openweathermap:
   key: ENC(jBdVosbeOteUGOYStf6IVmulQvNc7RF5ZItkCQWkZWNymscNbarTQEbf/r64Ejvy7enyRTmrDHrtbycRIyheYlcFqZn13oy8AlsyT1s1Yso=)
+
+jasypt:
+  encryptor:
+    password: ${JASYPT_ENCRYPTOR_PASSWORD}
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+    operations-sorter: method
+    display-request-duration: true
+    persist-authorization: true
+  api-docs:
+    path: /v3/api-docs
+  default-produces-media-type: application/json
