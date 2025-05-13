@@ -1,15 +1,35 @@
-version: "3.8"
 services:
   zb-weather-diary:
     image: zb-weather-diary
-    container_name: zb-weather-diary-container
+    container_name: zb-weather-diary
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8081:8081"
+      - "10001:10001"
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+    networks:
+      - backend
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
     environment:
-      - JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD}
-      - DATABASE_HOST=${DATABASE_HOST}
-      - DATABASE_USERNAME=${DATABASE_USERNAME}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  mysql-data:
