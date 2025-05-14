@@ -36,7 +36,6 @@ jasypt:
 
 springdoc:
   swagger-ui:
-    path: /swagger
     operations-sorter: method
     display-request-duration: true
     persist-authorization: true
