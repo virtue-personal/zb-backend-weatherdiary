@@ -36,6 +36,7 @@ jasypt:
 
 springdoc:
   swagger-ui:
+    url: /zb-weather-diary/v3/api-docs
     operations-sorter: method
     display-request-duration: true
     persist-authorization: true
