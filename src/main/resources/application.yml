@@ -1,4 +1,6 @@
 server:
+  servlet:
+    context-path: /zb-weather-diary
   port: 10001
 
 spring:
