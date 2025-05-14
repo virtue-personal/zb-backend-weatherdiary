@@ -36,10 +36,7 @@ jasypt:
 
 springdoc:
   swagger-ui:
-    path: /swagger
     operations-sorter: method
     display-request-duration: true
     persist-authorization: true
-  api-docs:
-    path: /v3/api-docs
   default-produces-media-type: application/json
