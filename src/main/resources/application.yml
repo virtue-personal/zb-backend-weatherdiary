@@ -1,6 +1,4 @@
 server:
-  servlet:
-    context-path: /zb-weather-diary
   port: 10001
 
 spring:
@@ -38,13 +36,9 @@ jasypt:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui
-    url: /zb-weather-diary/v3/api-docs
     operations-sorter: method
     display-request-duration: true
     persist-authorization: true
-
   api-docs:
     path: /v3/api-docs
-
   default-produces-media-type: application/json
