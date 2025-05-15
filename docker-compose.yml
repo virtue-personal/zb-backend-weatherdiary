@@ -1,5 +1,5 @@
 services:
-  zb-weather-diary:
+  springboot:
     image: zb-weather-diary
     container_name: zb-weather-diary
     build:
@@ -12,24 +12,24 @@ services:
     env_file:
       - .env
     networks:
-      - backend
+      - project
 
   mysql:
     container_name: mysql
     image: mysql:8.0
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
-      - backend
+      - project
 
 networks:
-  backend:
-    driver: bridge
+  project:
+    external: true
 
 volumes:
   mysql-data:
